@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    container_name: current-rate-bot
+    
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - redis-nerwork
+
+  redis:
+    image: redis
+    container_name: 'redis-rate'
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-nerwork
+
+networks:
+  redis-nerwork:
+    driver: bridge
