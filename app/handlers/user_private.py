@@ -40,7 +40,8 @@ async def exchange(message: Message):
 @user_private_router.message(Command('rates'))
 async def send_rates_command(message: Message):
    keys = await redis_client.keys('*')
-   json_data_list =[json.loads(await redis_client.get(key)) for key in keys]
+   values = await redis_client.mget(keys)
+   json_data_list =[json.loads(value) for value in values]
    # Форматируем данные для отправки клиенту
    response_text = "\n".join([f"{valute['CharCode']} {valute['Value']} рублей, за {valute['Nominal']} {valute['Name']}" for valute in json_data_list if valute['CharCode'] != 'RUB'])
    await message.answer(response_text)
