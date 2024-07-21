@@ -24,18 +24,12 @@ async def exchange(message: Message):
       await message.answer('Неверное количество параметров')
    else:
       try:         
-         if request[1] != 'RUB':
-            json_data = await redis_client.get(request[1])
-            if json_data:
+         json_data = await redis_client.get(request[1])
+         if json_data:
                data1 = json.loads(json_data)
-         else:
-            data1 = {'VunitRate': 1, 'Name': 'Росийскийских рублей'}
-         if request[2] != 'RUB':
-            json_data = await redis_client.get(request[2])
-            if json_data:
-               data2 = json.loads(json_data)
-         else:
-            data2 = {'VunitRate': '1,0', 'Name': 'Росийскийских рублей'}
+         json_data = await redis_client.get(request[2])
+         if json_data:
+            data2 = json.loads(json_data)
          count = request[3]
          result = float(data1['VunitRate'].replace(',', '.')) * float(count) / float(data2['VunitRate'].replace(',', '.'))
          await message.answer(f"{result} {data2['Name']}")
@@ -48,7 +42,7 @@ async def send_rates_command(message: Message):
    keys = await redis_client.keys('*')
    json_data_list =[json.loads(await redis_client.get(key)) for key in keys]
    # Форматируем данные для отправки клиенту
-   response_text = "\n".join([f"{valute['CharCode']} {valute['Value']} рублей, за {valute['Nominal']} {valute['Name']}" for valute in json_data_list])
+   response_text = "\n".join([f"{valute['CharCode']} {valute['Value']} рублей, за {valute['Nominal']} {valute['Name']}" for valute in json_data_list if valute['CharCode'] != 'RUB'])
    await message.answer(response_text)
 
 # вывод данных по тексту

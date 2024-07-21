@@ -33,6 +33,17 @@ async def update_redis_data():
             }
             json_data = json.dumps(currency_data)
             await redis_client.set(currency_data['CharCode'], json_data)
+        rus_current = {
+            'ID': '1',
+            'NumCode': '1',
+            'CharCode': 'RUB',
+            'Nominal': '1',
+            'Name': 'Росийскийских рублей',
+            'Value': '1',
+            'VunitRate': '1,0',
+        }
+        json_data = json.dumps(rus_current)
+        await redis_client.set(rus_current['CharCode'], json_data)
         return 
 
 def parse_xml(xmlstr):
