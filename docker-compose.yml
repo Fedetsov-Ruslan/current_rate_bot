@@ -6,6 +6,7 @@ services:
     ports:
       - "5555:5555"
     depends_on:
+      - aiohttp
       - redis
     volumes:
       - .:/app
@@ -17,6 +18,16 @@ services:
     container_name: 'redis-rate'
     ports:
       - "6379:6379"
+    networks:
+      - redis-nerwork
+  
+  aiohttp:
+    image: current_rate_aiohttp
+    container_name: 'aiohttp-rate'
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
     networks:
       - redis-nerwork
 

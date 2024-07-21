@@ -5,12 +5,10 @@ import json
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
-from app.aiohttp.aiohttp import fetch_xml, parse_xml
 
 
 user_private_router = Router()
 redis_client = redis.from_url("redis://redis:6379/0")
-
 
 @user_private_router.message(CommandStart())
 async def start(message: Message):
