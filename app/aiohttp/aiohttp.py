@@ -1,9 +1,9 @@
 import redis.asyncio as redis
 import xml.etree.ElementTree as ElementTree
-import asyncio
+
 import json
 
-from datetime import datetime, timedelta
+
 from aiohttp import ClientSession
 
 
@@ -20,7 +20,9 @@ async def update_redis_data():
     while True:
         xmlstr = await fetch_xml()
         
-        root = ElementTree.XML(xmlstr)       
+        root = ElementTree.XML(xmlstr) 
+        currency_data_dict = {}
+             
         for valute in root.findall('Valute'):
             currency_data = {
                 'ID': valute.get('ID'),
@@ -32,7 +34,8 @@ async def update_redis_data():
                 'VunitRate': valute.find('VunitRate').text,
             }
             json_data = json.dumps(currency_data)
-            await redis_client.set(currency_data['CharCode'], json_data)
+            currency_data_dict[currency_data['CharCode']] = json_data
+            await redis_client.mset(currency_data_dict)
         rus_current = {
             'ID': '1',
             'NumCode': '1',
@@ -65,9 +68,3 @@ def parse_xml(xmlstr):
     return currencies
 
 
-async def handle():
-    xmlstr = await fetch_xml()
-    currencies = parse_xml(xmlstr)
-    
-    # Форматируем данные для отправки клиенту
-    response_text = "\n".join([f"{code}: {value}" for code, value in currencies])
